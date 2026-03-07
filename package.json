@@ -1,0 +1,16 @@
+{
+  "name": "fc-name-your-price",
+  "version": "1.0.0",
+  "description": "A WordPress plugin that adds \"name your price\" and \"pay what you want\" forms powered by [FluentCart](https://fluent.cart).",
+  "main": "index.js",
+  "scripts": {
+    "build": "wp-scripts build --webpack-src-dir=blocks/name-your-price/src --output-path=blocks/name-your-price/build",
+    "start": "wp-scripts start --webpack-src-dir=blocks/name-your-price/src --output-path=blocks/name-your-price/build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GPL-2.0-or-later",
+  "devDependencies": {
+    "@wordpress/scripts": "^31.6.0"
+  }
+}

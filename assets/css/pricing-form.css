@@ -1,0 +1,257 @@
+/* ==========================================================================
+   Name Your Price for FluentCart - Form Styles
+   Uses FluentCart CSS variables with fallbacks to match the parent plugin.
+   All sizes in px to avoid conflicts with theme rem/em base.
+   ========================================================================== */
+
+.fcnyp-form {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--fct-primary-text-color, #2F3448);
+}
+
+.fcnyp-form *,
+.fcnyp-form *::before,
+.fcnyp-form *::after {
+  box-sizing: border-box;
+}
+
+/* Input Wrap
+   ========================================================================== */
+
+.fcnyp-form__input-wrap {
+  display: flex;
+  align-items: center;
+  position: relative;
+  border: 1px solid var(--fct-border-color, #D6DAE1);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 16px;
+  background-color: var(--fct-input-bg-color, #ffffff);
+}
+
+.fcnyp-form__input-wrap:focus-within {
+  border-color: var(--fct-active-border-color, #8D9095);
+}
+
+.fcnyp-form__currency {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 14px 0 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--fct-input-placeholder-text-color, #ADB5C2);
+  user-select: none;
+  line-height: 1;
+  z-index: 1;
+}
+
+/* Currency before amount */
+.fcnyp-form__currency:first-child {
+  left: 0;
+  border-right: 1px solid var(--fct-border-color, #D6DAE1);
+  padding: 20px 14px 20px 20px;
+}
+
+/* Currency after amount */
+.fcnyp-form__currency:last-child {
+  right: 0;
+  border-left: 1px solid var(--fct-border-color, #D6DAE1);
+  padding: 20px 20px 20px 14px;
+}
+
+.fcnyp-form__amount {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 20px 24px;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--fct-input-text-color, var(--fct-primary-text-color, #2F3448));
+  background: transparent;
+  width: 100%;
+  line-height: 1;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.fcnyp-form__amount[readonly] {
+  cursor: default;
+  background-color: var(--fct-input-disabled-bg-color, #F5F6F7);
+}
+
+.fcnyp-form__amount::placeholder {
+  color: var(--fct-input-placeholder-text-color, #ADB5C2);
+}
+
+.fcnyp-form__amount::-webkit-inner-spin-button,
+.fcnyp-form__amount::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Display-only amount (no custom input)
+   ========================================================================== */
+
+.fcnyp-form__amount-display {
+  flex: 1;
+  padding: 20px 24px;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--fct-input-text-color, var(--fct-primary-text-color, #2F3448));
+  width: 100%;
+  line-height: 1;
+  text-align: center;
+}
+
+/* Button
+   ========================================================================== */
+
+.fcnyp-form__button {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  min-height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--fct-btn-text-color, #ffffff);
+  background: linear-gradient(180deg, #ffffff29, #fff0), var(--fct-btn-bg-color, var(--fct-primary-bg-color, #253241));
+  box-shadow: inset 0 0.5px 0.5px 0.5px #ffffff1a;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fcnyp-form__button:hover {
+  opacity: 0.9;
+}
+
+.fcnyp-form__button:active {
+  opacity: 0.85;
+}
+
+/* Error
+   ========================================================================== */
+
+.fcnyp-form__error {
+  color: #F04438;
+  font-size: 13px;
+  margin-top: 10px;
+  min-height: 20px;
+}
+
+/* Presets (styled variant)
+   Dynamic columns via data-cols attribute. Max 3 per row.
+   ========================================================================== */
+
+.fcnyp-form__presets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.fcnyp-form__presets[data-cols="1"] {
+  grid-template-columns: 1fr;
+}
+
+.fcnyp-form__presets[data-cols="2"] {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.fcnyp-form__presets[data-cols="3"] {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.fcnyp-form__preset {
+  padding: 22px 16px;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--fct-secondary-text-color, #565865);
+  background: var(--fct-secondary-bg-color, #F5F6F7);
+  border: 1px solid var(--fct-border-color, #D6DAE1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+}
+
+.fcnyp-form__preset-currency {
+  font-size: 12px;
+  font-weight: 500;
+  vertical-align: super;
+}
+
+.fcnyp-form__preset:hover {
+  border-color: var(--fct-active-border-color, #8D9095);
+}
+
+.fcnyp-form__preset--active {
+  border-color: var(--fct-primary-bg-color, #253241);
+  background: var(--fct-input-bg-color, #ffffff);
+  color: var(--fct-primary-text-color, #2F3448);
+}
+
+.fcnyp-form__preset--active .fcnyp-form__preset-currency {
+  color: var(--fct-primary-text-color, #2F3448);
+}
+
+.fcnyp-form__preset--custom {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Inline variant (no presets)
+   ========================================================================== */
+
+.fcnyp-form--inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.fcnyp-form--inline .fcnyp-form__input-wrap {
+  flex: 1;
+  min-width: 150px;
+  margin-bottom: 0;
+}
+
+.fcnyp-form--inline .fcnyp-form__currency {
+  position: static;
+  transform: none;
+  padding: 14px 12px 14px 16px;
+  font-size: 14px;
+}
+
+.fcnyp-form--inline .fcnyp-form__currency:first-child {
+  border-right: none;
+}
+
+.fcnyp-form--inline .fcnyp-form__currency:last-child {
+  border-left: none;
+  padding: 14px 16px 14px 12px;
+}
+
+.fcnyp-form--inline .fcnyp-form__amount {
+  padding: 14px 16px 14px 8px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.fcnyp-form--inline .fcnyp-form__button {
+  width: auto;
+  flex-shrink: 0;
+}
+
+.fcnyp-form--inline .fcnyp-form__error {
+  width: 100%;
+}

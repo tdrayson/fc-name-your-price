@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "fc-name-your-price/form",
+  "version": "1.0.0",
+  "title": "Name Your Price",
+  "category": "widgets",
+  "icon": "money-alt",
+  "description": "A name-your-price form powered by FluentCart.",
+  "keywords": ["donate", "donation", "pay what you want", "pricing", "payment", "fluentcart"],
+  "textdomain": "fc-name-your-price",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"]
+  },
+  "attributes": {
+    "min": {
+      "type": "string",
+      "default": "1"
+    },
+    "max": {
+      "type": "string",
+      "default": "10000"
+    },
+    "showPresets": {
+      "type": "string",
+      "default": "yes"
+    },
+    "allowCustom": {
+      "type": "string",
+      "default": "yes"
+    },
+    "presetAmounts": {
+      "type": "string",
+      "default": "10,25,50,100"
+    },
+    "buttonText": {
+      "type": "string",
+      "default": "Donate {amount}"
+    },
+    "defaultAmount": {
+      "type": "string",
+      "default": ""
+    },
+    "productTitle": {
+      "type": "string",
+      "default": "Donation"
+    }
+  },
+  "editorScript": "file:./build/index.js",
+  "style": "file:../../assets/css/pricing-form.css",
+  "render": "file:./render.php"
+}
