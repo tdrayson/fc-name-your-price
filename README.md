@@ -24,9 +24,10 @@ Use a shortcode or Gutenberg block to drop a pricing form anywhere on your site.
 
 ## Installation
 
-1. Download or clone this repository into `wp-content/plugins/fc-name-your-price`
-2. Activate the plugin in **Plugins → Installed Plugins**
-3. Make sure FluentCart is installed and activated
+1. Download the latest `fc-name-your-price-x.x.x.zip` from the [Releases page](https://github.com/tdrayson/fc-name-your-price/releases)
+2. In WordPress, go to **Plugins → Add New → Upload Plugin** and upload the zip
+3. Activate the plugin
+4. Make sure FluentCart is installed and activated
 
 ## Usage
 
@@ -128,6 +129,18 @@ fc-name-your-price/
 The plugin creates a custom item on-the-fly at checkout time using FluentCart's [Custom Product Selling](https://dev.fluentcart.com/modules/custom-product-selling) API. No products need to exist in FluentCart — the form generates an instant checkout URL with the chosen amount, and the integration class validates and builds the line item server-side via the `fluent_cart/cart/validate_custom_item` filter.
 
 Prices are passed to FluentCart in cents (e.g. `$10.00` = `1000`).
+
+## Changelog
+
+### 1.0.0 — 2026-03-07
+- Initial release
+- Name-your-price and pay-what-you-want pricing forms
+- Gutenberg block with live editor preview
+- Shortcode support (`[fc_name_your_price]`)
+- FluentCart integration for payment processing
+- Preset amount buttons and custom amount input
+- Min/max validation on client and server
+- Currency-aware formatting via FluentCart settings
 
 ## License
 
