@@ -1,5 +1,6 @@
-# Name Your Price for FluentCart
+<img width="1183" height="614" alt="Screenshot 2026-03-07 at 23 19 48" src="https://github.com/user-attachments/assets/7045c0fe-276e-4876-8bfa-a7026570f5b7" />
 
+# Name Your Price for FluentCart
 A WordPress plugin that adds "name your price" and "pay what you want" forms powered by [FluentCart](https://fluent.cart).
 
 Use a shortcode or Gutenberg block to drop a pricing form anywhere on your site. Visitors pick a preset amount or type their own, then check out instantly through FluentCart — no product setup required.
