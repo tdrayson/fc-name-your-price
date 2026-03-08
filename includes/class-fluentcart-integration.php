@@ -117,6 +117,10 @@ class FluentCartIntegration
             $paymentType = 'onetime';
         }
 
+        if ($subscriptionMode === 'required') {
+            $paymentType = 'subscription';
+        }
+
         $otherInfo = ['payment_type' => $paymentType];
 
         if ($paymentType === 'subscription') {
