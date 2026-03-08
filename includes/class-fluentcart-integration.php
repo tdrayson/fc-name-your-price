@@ -44,10 +44,8 @@ class FluentCartIntegration
         $nonce = isset($_GET['_fcnyp_nonce']) ? sanitize_text_field($_GET['_fcnyp_nonce']) : '';
 
         if (! wp_verify_nonce($nonce, 'fcnyp_checkout')) {
-            return new \WP_Error(
-                'fcnyp_invalid_nonce',
-                __('This checkout link has expired. Please return to the form and try again.', 'fc-name-your-price')
-            );
+            wp_safe_redirect(home_url('/'));
+            exit;
         }
 
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
