@@ -131,8 +131,9 @@ class Shortcode
         wp_enqueue_style('fcnyp-form', FCNYP_PLUGIN_URL . 'assets/css/pricing-form.css', [], FCNYP_VERSION);
         wp_enqueue_script('fcnyp-form', FCNYP_PLUGIN_URL . 'assets/js/pricing-form.js', [], FCNYP_VERSION, true);
         wp_localize_script('fcnyp-form', 'fcnypI18n', [
-            'errorMin' => __('Please enter an amount of at least {amount}', 'fc-name-your-price'),
-            'errorMax' => __('Maximum amount is {amount}', 'fc-name-your-price'),
+            'errorMin'    => __('Please enter an amount of at least {amount}', 'fc-name-your-price'),
+            'errorMax'    => __('Maximum amount is {amount}', 'fc-name-your-price'),
+            'processing'  => __('Processing…', 'fc-name-your-price'),
         ]);
     }
 
