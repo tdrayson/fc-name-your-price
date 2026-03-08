@@ -230,6 +230,7 @@
         quantity: '1',
         is_custom: 'true',
         amount: totalAmount.toString(),
+        base_amount: this.selectedAmount.toString(),
         product_title: this.config.productTitle,
         payment_type: this.paymentType,
         billing_interval: this.config.billingInterval,

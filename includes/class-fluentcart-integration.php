@@ -75,17 +75,19 @@ class FluentCartIntegration
 
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $amount = isset($_GET['amount']) ? floatval($_GET['amount']) : 0;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $baseAmount = isset($_GET['base_amount']) ? floatval($_GET['base_amount']) : $amount;
         $min    = apply_filters('fcnyp_min_amount', $min);
         $max    = apply_filters('fcnyp_max_amount', $max);
 
-        if ($amount <= 0) {
+        if ($baseAmount <= 0) {
             return new \WP_Error(
                 'fcnyp_invalid_amount',
                 __('Please enter a valid amount.', 'fc-name-your-price')
             );
         }
 
-        if ($amount < $min) {
+        if ($baseAmount < $min) {
             return new \WP_Error(
                 'fcnyp_amount_too_low',
                 /* translators: %s: formatted minimum amount */
@@ -93,7 +95,7 @@ class FluentCartIntegration
             );
         }
 
-        if ($amount > $max) {
+        if ($baseAmount > $max) {
             return new \WP_Error(
                 'fcnyp_amount_too_high',
                 /* translators: %s: formatted maximum amount */
