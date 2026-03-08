@@ -101,9 +101,7 @@ class FluentCartIntegration
             );
         }
 
-        $currencySettings = \FluentCart\Api\CurrencySettings::get();
-        $isZeroDecimal = $currencySettings['is_zero_decimal'] ?? false;
-        $priceInCents = $isZeroDecimal ? round($amount) : round($amount * 100);
+        $priceInCents = round($amount * 100);
 
         $productTitle = apply_filters('fcnyp_product_title', $productTitle);
 
