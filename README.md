@@ -195,6 +195,15 @@ fc-name-your-price/
 
 ## Changelog
 
+### 1.2.1 — 2026-03-08
+- Fix hardcoded English JS error messages — now translatable via `wp_localize_script`
+- Wrap form in `<form>` element for Enter key submit and screen reader accessibility
+- Fix broken form when `allow_custom="no"` and `show_presets="no"` with no default amount — falls back to custom input
+- Fix mismatched `preset_amounts` default in block `render.php` (was missing `5`)
+- Whitelist `text_align` shortcode attribute to valid alignment values only
+- Restrict form title/description HTML to RichText formatting tags (no inline images)
+- Add `allowedFormats` to block editor RichText fields to match
+
 ### 1.2.0 — 2026-03-08
 - Add form title and description with RichText editing in the block editor
 - Add transaction fee recovery with configurable percentage, fixed fee, and checkbox text

@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Name Your Price for FluentCart
  * Description: Name-your-price and pay-what-you-want forms powered by FluentCart.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Taylor Drayson
  * Text Domain: fc-name-your-price
  * Requires Plugins: fluent-cart
@@ -15,7 +15,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('FCNYP_VERSION', '1.2.0');
+define('FCNYP_VERSION', '1.2.1');
 define('FCNYP_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('FCNYP_PLUGIN_URL', plugin_dir_url(__FILE__));
 
