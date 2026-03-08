@@ -33,10 +33,20 @@ class Shortcode
             'max'            => '10000',
             'show_presets'   => 'yes',
             'allow_custom'   => 'yes',
-            'preset_amounts' => '10,25,50,100',
-            'button_text'    => __('Donate {amount}', 'fc-name-your-price'),
-            'default_amount' => '',
-            'product_title'  => __('Donation', 'fc-name-your-price'),
+            'preset_amounts' => '5,10,25,50,100',
+            'button_text'    => __('Pay {amount}', 'fc-name-your-price'),
+            'default_amount'    => '',
+            'product_title'     => __('Donation', 'fc-name-your-price'),
+            'text_align'        => '',
+            'form_title'        => '',
+            'form_description'  => '',
+            'subscription_button_text' => __('Pay {amount} per {frequency}', 'fc-name-your-price'),
+            'subscription_mode' => 'off',
+            'billing_interval'  => 'monthly',
+            'cover_fees'        => 'off',
+            'fee_percentage'    => '2.9',
+            'fee_fixed'         => '0.30',
+            'fee_text'          => __('Cover the {fee} transaction fee', 'fc-name-your-price'),
         ]);
     }
 
@@ -75,10 +85,19 @@ class Shortcode
             $atts['default_amount'] = $presetAmounts[0];
         }
 
+        // For subscription modes, use the subscription button text
+        if ($atts['subscription_mode'] === 'optional') {
+            $atts['button_text_onetime']     = $atts['button_text'];
+            $atts['button_text_subscription'] = $atts['subscription_button_text'];
+        } elseif ($atts['subscription_mode'] === 'required') {
+            $atts['button_text'] = $atts['subscription_button_text'];
+        }
+
         $atts['rendered_button_text'] = self::renderButtonText($atts);
 
         $dataString  = self::buildDataString($atts);
-        $layoutClass = $showPresets ? 'fcnyp-form--stacked' : 'fcnyp-form--inline';
+        $isInline    = ! $showPresets && $atts['subscription_mode'] === 'off' && $atts['cover_fees'] !== 'optional';
+        $layoutClass = $isInline ? 'fcnyp-form--inline' : 'fcnyp-form--stacked';
         $uniqueId    = 'fcnyp-' . wp_unique_id();
 
         ob_start();
@@ -130,7 +149,22 @@ class Shortcode
             'button-text'        => esc_attr($atts['button_text']),
             'allow-custom'       => $atts['allow_custom'] === 'yes' ? 'true' : 'false',
             'default-amount'     => floatval($atts['default_amount']),
+            'subscription-mode'   => esc_attr($atts['subscription_mode']),
+            'billing-interval'    => esc_attr($atts['billing_interval']),
+            'frequency-noun'      => esc_attr(self::getFrequencyNoun($atts['billing_interval'])),
         ];
+
+        if ($atts['subscription_mode'] === 'optional') {
+            $dataAttrs['button-text-onetime']      = esc_attr($atts['button_text_onetime']);
+            $dataAttrs['button-text-subscription']  = esc_attr($atts['subscription_button_text']);
+        }
+
+        if ($atts['cover_fees'] === 'optional') {
+            $dataAttrs['cover-fees']    = 'optional';
+            $dataAttrs['fee-percentage'] = floatval($atts['fee_percentage']);
+            $dataAttrs['fee-fixed']     = floatval($atts['fee_fixed']);
+            $dataAttrs['fee-text']      = esc_attr($atts['fee_text']);
+        }
 
         $output = '';
         foreach ($dataAttrs as $key => $value) {
@@ -159,6 +193,24 @@ class Shortcode
         $presets       = $showPresets ? self::preparePresets($presetAmounts, $allowCustom) : null;
         ?>
         <div id="<?php echo esc_attr($uniqueId); ?>" class="fcnyp-form <?php echo esc_attr($layoutClass); ?>"<?php echo $dataString; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+            <?php
+            $headerStyle = '';
+            if (! empty($atts['text_align'])) {
+                $headerStyle = sprintf(' style="text-align:%s"', esc_attr($atts['text_align']));
+            }
+            ?>
+            <?php if (! empty($atts['form_title'])) : ?>
+            <div class="fcnyp-form__header"<?php echo $headerStyle; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+                <h3 class="fcnyp-form__title"><?php echo wp_kses_post($atts['form_title']); ?></h3>
+                <?php if (! empty($atts['form_description'])) : ?>
+                    <p class="fcnyp-form__description"><?php echo wp_kses_post($atts['form_description']); ?></p>
+                <?php endif; ?>
+            </div>
+            <?php elseif (! empty($atts['form_description'])) : ?>
+            <div class="fcnyp-form__header"<?php echo $headerStyle; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+                <p class="fcnyp-form__description"><?php echo wp_kses_post($atts['form_description']); ?></p>
+            </div>
+            <?php endif; ?>
             <div class="fcnyp-form__input-wrap">
                 <?php if ($atts['currency_before']) : ?>
                     <span class="fcnyp-form__currency"><?php echo esc_html($atts['currency_symbol']); ?></span>
@@ -204,6 +256,25 @@ class Shortcode
                     </button>
                 <?php endif; ?>
             </div>
+            <?php endif; ?>
+            <?php if ($atts['cover_fees'] === 'optional') : ?>
+            <label class="fcnyp-form__cover-fees">
+                <input type="checkbox" class="fcnyp-form__cover-fees-checkbox" />
+                <span class="fcnyp-form__cover-fees-label">
+                    <?php echo esc_html(self::renderFeeText($atts)); ?>
+                </span>
+            </label>
+            <?php endif; ?>
+            <?php if ($atts['subscription_mode'] === 'optional') : ?>
+            <label class="fcnyp-form__subscription">
+                <input type="checkbox" class="fcnyp-form__subscription-checkbox" />
+                <span class="fcnyp-form__subscription-label">
+                    <?php
+                    /* translators: %s: billing interval label (e.g. "monthly", "yearly") */
+                    printf(esc_html__('Make this %s', 'fc-name-your-price'), esc_html(self::getBillingLabel($atts['billing_interval'])));
+                    ?>
+                </span>
+            </label>
             <?php endif; ?>
             <button type="button" class="fcnyp-form__button"><?php echo esc_html($atts['rendered_button_text']); ?></button>
             <div class="fcnyp-form__error" aria-live="polite"></div>
@@ -284,7 +355,47 @@ class Shortcode
     }
 
     /**
-     * Render the button text, replacing {amount} with the formatted default amount.
+     * Get a human-readable label for a billing interval.
+     *
+     * @param string $interval The billing interval key.
+     * @return string Translated label.
+     */
+    private static function getBillingLabel($interval)
+    {
+        $labels = [
+            'daily'       => __('daily', 'fc-name-your-price'),
+            'weekly'      => __('weekly', 'fc-name-your-price'),
+            'monthly'     => __('monthly', 'fc-name-your-price'),
+            'quarterly'   => __('quarterly', 'fc-name-your-price'),
+            'half_yearly' => __('half-yearly', 'fc-name-your-price'),
+            'yearly'      => __('yearly', 'fc-name-your-price'),
+        ];
+
+        return $labels[$interval] ?? $labels['monthly'];
+    }
+
+    /**
+     * Get a short frequency noun for display (e.g. "per month").
+     *
+     * @param string $interval The billing interval key.
+     * @return string Translated short label.
+     */
+    private static function getFrequencyNoun($interval)
+    {
+        $nouns = [
+            'daily'       => __('day', 'fc-name-your-price'),
+            'weekly'      => __('week', 'fc-name-your-price'),
+            'monthly'     => __('month', 'fc-name-your-price'),
+            'quarterly'   => __('quarter', 'fc-name-your-price'),
+            'half_yearly' => __('six months', 'fc-name-your-price'),
+            'yearly'      => __('year', 'fc-name-your-price'),
+        ];
+
+        return $nouns[$interval] ?? $nouns['monthly'];
+    }
+
+    /**
+     * Render the button text, replacing {amount} and {frequency} placeholders.
      *
      * @param array $atts Processed shortcode attributes.
      * @return string Rendered button text.
@@ -293,19 +404,56 @@ class Shortcode
     {
         $text = $atts['button_text'];
 
-        if (strpos($text, '{amount}') === false) {
-            return $text;
+        // Replace {frequency}
+        if (strpos($text, '{frequency}') !== false) {
+            if ($atts['subscription_mode'] !== 'off') {
+                $text = str_replace('{frequency}', self::getFrequencyNoun($atts['billing_interval']), $text);
+            } else {
+                $text = str_replace('{frequency}', '', $text);
+            }
         }
 
-        $amount = floatval($atts['default_amount']);
+        // Replace {amount}
+        if (strpos($text, '{amount}') !== false) {
+            $amount = floatval($atts['default_amount']);
 
-        if ($amount <= 0) {
-            return trim(str_replace('{amount}', '', $text));
+            if ($amount <= 0) {
+                $text = str_replace('{amount}', '', $text);
+            } else {
+                $priceInCents = round($amount * 100);
+                $formatted    = \FluentCart\Api\CurrencySettings::getFormattedPrice($priceInCents);
+                $text         = str_replace('{amount}', $formatted, $text);
+            }
         }
 
-        $priceInCents = round($amount * 100);
-        $formatted    = \FluentCart\Api\CurrencySettings::getFormattedPrice($priceInCents);
+        return trim(preg_replace('/\s+/', ' ', $text));
+    }
 
-        return str_replace('{amount}', $formatted, $text);
+    /**
+     * Render the fee checkbox text, replacing the {fee} placeholder with the
+     * calculated fee based on the default amount.
+     *
+     * @param array $atts Processed shortcode attributes.
+     * @return string Rendered fee text.
+     */
+    private static function renderFeeText($atts)
+    {
+        $text       = $atts['fee_text'];
+        $amount     = floatval($atts['default_amount']);
+        $percentage = floatval($atts['fee_percentage']);
+        $fixed      = floatval($atts['fee_fixed']);
+
+        if (strpos($text, '{fee}') !== false) {
+            if ($amount > 0) {
+                $fee          = ($amount * $percentage / 100) + $fixed;
+                $feeInCents   = round($fee * 100);
+                $formattedFee = \FluentCart\Api\CurrencySettings::getFormattedPrice($feeInCents);
+                $text         = str_replace('{fee}', $formattedFee, $text);
+            } else {
+                $text = str_replace('{fee}', '', $text);
+            }
+        }
+
+        return trim(preg_replace('/\s+/', ' ', $text));
     }
 }

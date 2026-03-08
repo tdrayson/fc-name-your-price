@@ -5,145 +5,172 @@
    ========================================================================== */
 
 .fcnyp-form {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, sans-serif;
-  width: 100%;
-  box-sizing: border-box;
-  color: var(--fct-primary-text-color, #2F3448);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, sans-serif;
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--fct-primary-text-color, #2F3448);
 }
 
 .fcnyp-form *,
 .fcnyp-form *::before,
 .fcnyp-form *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/* Header (title + description)
+   ========================================================================== */
+
+.fcnyp-form__header {
+    margin-bottom: 16px;
+}
+
+.fcnyp-form__title {
+    margin: 0 0 4px;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--fct-primary-text-color, #2F3448);
+}
+
+.fcnyp-form__description {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--fct-secondary-text-color, #565865);
+}
+
+.fcnyp-form__header:empty {
+    display: none;
 }
 
 /* Input Wrap
    ========================================================================== */
 
 .fcnyp-form__input-wrap {
-  display: flex;
-  align-items: center;
-  position: relative;
-  border: 1px solid var(--fct-border-color, #D6DAE1);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-bottom: 16px;
-  background-color: var(--fct-input-bg-color, #ffffff);
+    display: flex;
+    align-items: center;
+    position: relative;
+    border: 1px solid var(--fct-border-color, #D6DAE1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 16px;
+    background-color: var(--fct-input-bg-color, #ffffff);
 }
 
 .fcnyp-form__input-wrap:focus-within {
-  border-color: var(--fct-active-border-color, #8D9095);
+    border-color: var(--fct-active-border-color, #8D9095);
 }
 
 .fcnyp-form__currency {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 0 14px 0 20px;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--fct-input-placeholder-text-color, #ADB5C2);
-  user-select: none;
-  line-height: 1;
-  z-index: 1;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 14px 0 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--fct-input-placeholder-text-color, #ADB5C2);
+    user-select: none;
+    line-height: 1;
+    z-index: 1;
 }
 
 /* Currency before amount */
 .fcnyp-form__currency:first-child {
-  left: 0;
-  border-right: 1px solid var(--fct-border-color, #D6DAE1);
-  padding: 20px 14px 20px 20px;
+    left: 0;
+    border-right: 1px solid var(--fct-border-color, #D6DAE1);
+    padding: 20px 14px 20px 20px;
 }
 
 /* Currency after amount */
 .fcnyp-form__currency:last-child {
-  right: 0;
-  border-left: 1px solid var(--fct-border-color, #D6DAE1);
-  padding: 20px 20px 20px 14px;
+    right: 0;
+    border-left: 1px solid var(--fct-border-color, #D6DAE1);
+    padding: 20px 20px 20px 14px;
 }
 
 .fcnyp-form__amount {
-  flex: 1;
-  border: none;
-  outline: none;
-  padding: 20px 24px;
-  font-size: 26px;
-  font-weight: 600;
-  color: var(--fct-input-text-color, var(--fct-primary-text-color, #2F3448));
-  background: transparent;
-  width: 100%;
-  line-height: 1;
-  text-align: center;
-  -moz-appearance: textfield;
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 20px 24px;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--fct-input-text-color, var(--fct-primary-text-color, #2F3448));
+    background: transparent;
+    width: 100%;
+    line-height: 1;
+    text-align: center;
+    -moz-appearance: textfield;
 }
 
 .fcnyp-form__amount[readonly] {
-  cursor: default;
-  background-color: var(--fct-input-disabled-bg-color, #F5F6F7);
+    cursor: default;
+    background-color: var(--fct-input-disabled-bg-color, #F5F6F7);
 }
 
 .fcnyp-form__amount::placeholder {
-  color: var(--fct-input-placeholder-text-color, #ADB5C2);
+    color: var(--fct-input-placeholder-text-color, #ADB5C2);
 }
 
 .fcnyp-form__amount::-webkit-inner-spin-button,
 .fcnyp-form__amount::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Display-only amount (no custom input)
    ========================================================================== */
 
 .fcnyp-form__amount-display {
-  flex: 1;
-  padding: 20px 24px;
-  font-size: 26px;
-  font-weight: 600;
-  color: var(--fct-input-text-color, var(--fct-primary-text-color, #2F3448));
-  width: 100%;
-  line-height: 1;
-  text-align: center;
+    flex: 1;
+    padding: 20px 24px;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--fct-input-text-color, var(--fct-primary-text-color, #2F3448));
+    width: 100%;
+    line-height: 1;
+    text-align: center;
 }
 
 /* Button
    ========================================================================== */
 
 .fcnyp-form__button {
-  display: block;
-  width: 100%;
-  padding: 14px 20px;
-  min-height: 48px;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1;
-  color: var(--fct-btn-text-color, #ffffff);
-  background: linear-gradient(180deg, #ffffff29, #fff0), var(--fct-btn-bg-color, var(--fct-primary-bg-color, #253241));
-  box-shadow: inset 0 0.5px 0.5px 0.5px #ffffff1a;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    min-height: 48px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--fct-btn-text-color, #ffffff);
+    background: linear-gradient(180deg, #ffffff29, #fff0), var(--fct-btn-bg-color, var(--fct-primary-bg-color, #253241));
+    box-shadow: inset 0 0.5px 0.5px 0.5px #ffffff1a;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .fcnyp-form__button:hover {
-  opacity: 0.9;
+    opacity: 0.9;
 }
 
 .fcnyp-form__button:active {
-  opacity: 0.85;
+    opacity: 0.85;
 }
 
 /* Error
    ========================================================================== */
 
 .fcnyp-form__error {
-  color: #F04438;
-  font-size: 13px;
-  margin-top: 10px;
-  min-height: 20px;
+    color: #F04438;
+    font-size: 13px;
+    margin-top: 10px;
+    min-height: 20px;
 }
 
 /* Presets (styled variant)
@@ -151,107 +178,171 @@
    ========================================================================== */
 
 .fcnyp-form__presets {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
 }
 
 .fcnyp-form__presets[data-cols="1"] {
-  grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
 }
 
 .fcnyp-form__presets[data-cols="2"] {
-  grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
 }
 
 .fcnyp-form__presets[data-cols="3"] {
-  grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .fcnyp-form__preset {
-  padding: 22px 16px;
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1;
-  color: var(--fct-secondary-text-color, #565865);
-  background: var(--fct-secondary-bg-color, #F5F6F7);
-  border: 1px solid var(--fct-border-color, #D6DAE1);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: center;
+    padding: 22px 16px;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--fct-secondary-text-color, #565865);
+    background: var(--fct-secondary-bg-color, #F5F6F7);
+    border: 1px solid var(--fct-border-color, #D6DAE1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
 }
 
 .fcnyp-form__preset-currency {
-  font-size: 12px;
-  font-weight: 500;
-  vertical-align: super;
+    font-size: 12px;
+    font-weight: 500;
+    vertical-align: super;
 }
 
 .fcnyp-form__preset:hover {
-  border-color: var(--fct-active-border-color, #8D9095);
+    border-color: var(--fct-active-border-color, #8D9095);
 }
 
 .fcnyp-form__preset--active {
-  border-color: var(--fct-primary-bg-color, #253241);
-  background: var(--fct-input-bg-color, #ffffff);
-  color: var(--fct-primary-text-color, #2F3448);
+    border-color: var(--fct-primary-bg-color, #253241);
+    background: var(--fct-input-bg-color, #ffffff);
+    color: var(--fct-primary-text-color, #2F3448);
 }
 
 .fcnyp-form__preset--active .fcnyp-form__preset-currency {
-  color: var(--fct-primary-text-color, #2F3448);
+    color: var(--fct-primary-text-color, #2F3448);
 }
 
 .fcnyp-form__preset--custom {
-  font-size: 15px;
-  font-weight: 500;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Subscription checkbox (optional subscription)
+   ========================================================================== */
+
+.fcnyp-form__subscription {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: var(--fct-input-bg-color, #ffffff);
+    border: 1px solid var(--fct-border-color, #D6DAE1);
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.fcnyp-form__subscription input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: var(--fct-primary-bg-color, #253241);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.fcnyp-form__subscription-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--fct-primary-text-color, #2F3448);
+    line-height: 1.3;
+}
+
+
+/* Cover Fees checkbox
+   ========================================================================== */
+
+.fcnyp-form__cover-fees {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: var(--fct-input-bg-color, #ffffff);
+    border: 1px solid var(--fct-border-color, #D6DAE1);
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.fcnyp-form__cover-fees input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: var(--fct-primary-bg-color, #253241);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.fcnyp-form__cover-fees-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--fct-primary-text-color, #2F3448);
+    line-height: 1.3;
 }
 
 /* Inline variant (no presets)
    ========================================================================== */
 
 .fcnyp-form--inline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    align-items: center;
 }
 
+
 .fcnyp-form--inline .fcnyp-form__input-wrap {
-  flex: 1;
-  min-width: 150px;
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .fcnyp-form--inline .fcnyp-form__currency {
-  position: static;
-  transform: none;
-  padding: 14px 12px 14px 16px;
-  font-size: 14px;
+    position: static;
+    transform: none;
+    padding: 14px 12px 14px 16px;
+    font-size: 14px;
 }
 
 .fcnyp-form--inline .fcnyp-form__currency:first-child {
-  border-right: none;
+    border-right: none;
 }
 
 .fcnyp-form--inline .fcnyp-form__currency:last-child {
-  border-left: none;
-  padding: 14px 16px 14px 12px;
+    border-left: none;
+    padding: 14px 16px 14px 12px;
 }
 
-.fcnyp-form--inline .fcnyp-form__amount {
-  padding: 14px 16px 14px 8px;
-  font-size: 18px;
-  font-weight: 600;
-  text-align: left;
+.fcnyp-form--inline .fcnyp-form__amount,
+.fcnyp-form--inline .fcnyp-form__amount-display {
+    padding: 14px 16px 14px 8px;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: left;
 }
 
 .fcnyp-form--inline .fcnyp-form__button {
-  width: auto;
-  flex-shrink: 0;
+    width: 100%;
 }
 
 .fcnyp-form--inline .fcnyp-form__error {
-  width: 100%;
+    grid-column: 1 / -1;
 }

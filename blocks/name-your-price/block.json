@@ -2,7 +2,7 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "fc-name-your-price/form",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "title": "Name Your Price",
   "category": "widgets",
   "icon": "money-alt",
@@ -10,8 +10,7 @@
   "keywords": ["donate", "donation", "pay what you want", "pricing", "payment", "fluentcart"],
   "textdomain": "fc-name-your-price",
   "supports": {
-    "html": false,
-    "align": ["wide", "full"]
+    "html": false
   },
   "attributes": {
     "min": {
@@ -32,11 +31,11 @@
     },
     "presetAmounts": {
       "type": "string",
-      "default": "10,25,50,100"
+      "default": "5,10,25,50,100"
     },
     "buttonText": {
       "type": "string",
-      "default": "Donate {amount}"
+      "default": "Pay {amount}"
     },
     "defaultAmount": {
       "type": "string",
@@ -45,6 +44,46 @@
     "productTitle": {
       "type": "string",
       "default": "Donation"
+    },
+    "textAlign": {
+      "type": "string",
+      "default": ""
+    },
+    "formTitle": {
+      "type": "string",
+      "default": ""
+    },
+    "formDescription": {
+      "type": "string",
+      "default": ""
+    },
+    "subscriptionButtonText": {
+      "type": "string",
+      "default": "Pay {amount} per {frequency}"
+    },
+    "subscriptionMode": {
+      "type": "string",
+      "default": "off"
+    },
+    "billingInterval": {
+      "type": "string",
+      "default": "monthly"
+    },
+    "coverFees": {
+      "type": "string",
+      "default": "off"
+    },
+    "feePercentage": {
+      "type": "string",
+      "default": "2.9"
+    },
+    "feeFixed": {
+      "type": "string",
+      "default": "0.30"
+    },
+    "feeText": {
+      "type": "string",
+      "default": "Cover the {fee} transaction fee"
     }
   },
   "editorScript": "file:./build/index.js",

@@ -12,30 +12,52 @@
      * @param {HTMLElement} el - The .fcnyp-form root element.
      */
     constructor(el) {
-      this.el             = el;
-      this.input          = el.querySelector('.fcnyp-form__amount');
-      this.amountDisplay  = el.querySelector('.fcnyp-form__amount-display');
-      this.button         = el.querySelector('.fcnyp-form__button');
-      this.errorEl        = el.querySelector('.fcnyp-form__error');
-      this.presets        = el.querySelectorAll('.fcnyp-form__preset');
-      this.min            = parseFloat(el.dataset.min) || 1;
-      this.max            = parseFloat(el.dataset.max) || 10000;
-      this.checkoutUrl    = el.dataset.checkoutUrl || '/';
-      this.productTitle   = el.dataset.productTitle || 'Donation';
-      this.currencyPos    = el.dataset.currencyPosition || 'before';
-      this.currencySymbol = el.dataset.currencySymbol || '$';
-      this.currencyCode   = el.dataset.currencyCode || 'USD';
-      this.decimalSep     = el.dataset.decimalSeparator || '.';
-      this.thousandSep    = el.dataset.thousandSeparator || ',';
-      this.isZeroDecimal  = el.dataset.isZeroDecimal === 'true';
-      this.buttonTemplate = el.dataset.buttonText || 'Donate Now';
+      this.el = el;
 
-      var defaultAmount    = parseFloat(el.dataset.defaultAmount) || 0;
-      this.selectedAmount  = this.input && this.input.value ? parseFloat(this.input.value) : defaultAmount;
+      this.els = {
+        input:                el.querySelector('.fcnyp-form__amount'),
+        amountDisplay:        el.querySelector('.fcnyp-form__amount-display'),
+        button:               el.querySelector('.fcnyp-form__button'),
+        error:                el.querySelector('.fcnyp-form__error'),
+        presets:              el.querySelectorAll('.fcnyp-form__preset'),
+        subscriptionCheckbox: el.querySelector('.fcnyp-form__subscription-checkbox'),
+        coverFeesCheckbox:    el.querySelector('.fcnyp-form__cover-fees-checkbox'),
+        coverFeesLabel:       el.querySelector('.fcnyp-form__cover-fees-label'),
+      };
+
+      this.config = {
+        min:            parseFloat(el.dataset.min) || 1,
+        max:            parseFloat(el.dataset.max) || 10000,
+        checkoutUrl:    el.dataset.checkoutUrl || '/',
+        productTitle:   el.dataset.productTitle || 'Donation',
+        currencyPos:    el.dataset.currencyPosition || 'before',
+        currencySymbol: el.dataset.currencySymbol || '$',
+        currencyCode:   el.dataset.currencyCode || 'USD',
+        decimalSep:     el.dataset.decimalSeparator || '.',
+        thousandSep:    el.dataset.thousandSeparator || ',',
+        isZeroDecimal:  el.dataset.isZeroDecimal === 'true',
+        buttonTemplate:             el.dataset.buttonText || 'Pay',
+        buttonTemplateOnetime:      el.dataset.buttonTextOnetime || el.dataset.buttonText || 'Pay',
+        buttonTemplateSubscription: el.dataset.buttonTextSubscription || el.dataset.buttonText || 'Pay',
+        subscriptionMode:  el.dataset.subscriptionMode || 'off',
+        billingInterval:   el.dataset.billingInterval || 'monthly',
+        frequencyNoun:     el.dataset.frequencyNoun || 'month',
+        coverFeesMode:  el.dataset.coverFees || 'off',
+        feePercentage:  parseFloat(el.dataset.feePercentage) || 0,
+        feeFixed:       parseFloat(el.dataset.feeFixed) || 0,
+        feeText:        el.dataset.feeText || '',
+      };
+
+      this.paymentType    = this.config.subscriptionMode === 'required' ? 'subscription' : 'onetime';
+      this.coverFees      = false;
+      this.selectedAmount = this.els.input && this.els.input.value
+        ? parseFloat(this.els.input.value)
+        : parseFloat(el.dataset.defaultAmount) || 0;
 
       this.autoSelectFirstPreset();
       this.updateAmountDisplay();
       this.updateButtonText();
+      this.updateFeeText();
       this.bindEvents();
     }
 
@@ -43,11 +65,11 @@
      * If no amount is selected, auto-select the first non-custom preset.
      */
     autoSelectFirstPreset() {
-      if (this.selectedAmount || !this.presets.length) {
+      if (this.selectedAmount || !this.els.presets.length) {
         return;
       }
 
-      var first = this.presets[0];
+      var first = this.els.presets[0];
 
       if (first.dataset.amount === 'custom') {
         return;
@@ -56,8 +78,8 @@
       this.selectedAmount = parseFloat(first.dataset.amount);
       first.classList.add('fcnyp-form__preset--active');
 
-      if (this.input) {
-        this.input.value = this.selectedAmount;
+      if (this.els.input) {
+        this.els.input.value = this.selectedAmount;
       }
     }
 
@@ -65,17 +87,71 @@
      * Bind click and input event listeners.
      */
     bindEvents() {
-      this.presets.forEach(function (preset) {
+      this.els.presets.forEach(function (preset) {
         preset.addEventListener('click', this.onPresetClick.bind(this, preset));
       }.bind(this));
 
-      if (this.input) {
-        this.input.addEventListener('input', this.onInputChange.bind(this));
+      if (this.els.input) {
+        this.els.input.addEventListener('input', this.onInputChange.bind(this));
       }
 
-      if (this.button) {
-        this.button.addEventListener('click', this.onSubmit.bind(this));
+      if (this.els.button) {
+        this.els.button.addEventListener('click', this.onSubmit.bind(this));
       }
+
+      if (this.els.subscriptionCheckbox) {
+        this.els.subscriptionCheckbox.addEventListener('change', this.onSubscriptionToggle.bind(this));
+      }
+
+      if (this.els.coverFeesCheckbox) {
+        this.els.coverFeesCheckbox.addEventListener('change', this.onCoverFeesToggle.bind(this));
+      }
+    }
+
+    /**
+     * Handle the subscription checkbox toggle.
+     */
+    onSubscriptionToggle() {
+      this.paymentType = this.els.subscriptionCheckbox.checked ? 'subscription' : 'onetime';
+      this.updateButtonText();
+    }
+
+    /**
+     * Handle the cover fees checkbox toggle.
+     */
+    onCoverFeesToggle() {
+      this.coverFees = this.els.coverFeesCheckbox.checked;
+    }
+
+    /**
+     * Calculate the transaction fee for a given amount.
+     *
+     * @param {number} amount - The base amount.
+     * @return {number} The fee amount.
+     */
+    calculateFee(amount) {
+      return (amount * this.config.feePercentage / 100) + this.config.feeFixed;
+    }
+
+    /**
+     * Update the fee label text with the current fee amount.
+     */
+    updateFeeText() {
+      if (!this.els.coverFeesLabel || !this.config.feeText) {
+        return;
+      }
+
+      var text = this.config.feeText;
+      if (text.indexOf('{fee}') !== -1) {
+        if (this.selectedAmount > 0) {
+          var fee = this.calculateFee(this.selectedAmount);
+          text = text.replace('{fee}', this.formatAmount(fee));
+        } else {
+          text = text.replace('{fee}', '');
+        }
+      }
+
+      this.els.coverFeesLabel.textContent = text.replace(/\s+/g, ' ').trim();
     }
 
     /**
@@ -84,26 +160,27 @@
      * @param {HTMLElement} preset - The clicked preset button.
      */
     onPresetClick(preset) {
-      this.presets.forEach(function (p) {
+      this.els.presets.forEach(function (p) {
         p.classList.remove('fcnyp-form__preset--active');
       });
       preset.classList.add('fcnyp-form__preset--active');
 
       if (preset.dataset.amount === 'custom') {
-        if (this.input) {
-          this.input.value = '';
-          this.input.focus();
+        if (this.els.input) {
+          this.els.input.value = '';
+          this.els.input.focus();
         }
         this.selectedAmount = 0;
       } else {
         this.selectedAmount = parseFloat(preset.dataset.amount);
-        if (this.input) {
-          this.input.value = this.selectedAmount;
+        if (this.els.input) {
+          this.els.input.value = this.selectedAmount;
         }
       }
 
       this.updateAmountDisplay();
       this.updateButtonText();
+      this.updateFeeText();
       this.clearError();
     }
 
@@ -111,15 +188,16 @@
      * Handle typing in the custom amount input.
      */
     onInputChange() {
-      this.selectedAmount = parseFloat(this.input.value) || 0;
+      this.selectedAmount = parseFloat(this.els.input.value) || 0;
 
-      this.presets.forEach(function (p) {
+      this.els.presets.forEach(function (p) {
         var matches = parseFloat(p.dataset.amount) === this.selectedAmount;
         p.classList.toggle('fcnyp-form__preset--active', matches);
       }.bind(this));
 
       this.updateAmountDisplay();
       this.updateButtonText();
+      this.updateFeeText();
       this.clearError();
     }
 
@@ -127,14 +205,19 @@
      * Handle the submit/checkout button click.
      */
     onSubmit() {
-      if (!this.selectedAmount || this.selectedAmount < this.min) {
-        this.showError('Please enter an amount of at least ' + this.formatAmount(this.min));
+      if (!this.selectedAmount || this.selectedAmount < this.config.min) {
+        this.showError('Please enter an amount of at least ' + this.formatAmount(this.config.min));
         return;
       }
 
-      if (this.selectedAmount > this.max) {
-        this.showError('Maximum amount is ' + this.formatAmount(this.max));
+      if (this.selectedAmount > this.config.max) {
+        this.showError('Maximum amount is ' + this.formatAmount(this.config.max));
         return;
+      }
+
+      var totalAmount = this.selectedAmount;
+      if (this.coverFees && this.config.coverFeesMode === 'optional') {
+        totalAmount += this.calculateFee(this.selectedAmount);
       }
 
       var params = new URLSearchParams({
@@ -142,11 +225,16 @@
         item_id: 'fcnyp_' + Date.now(),
         quantity: '1',
         is_custom: 'true',
-        donation_amount: this.selectedAmount.toString(),
-        product_title: this.productTitle,
+        donation_amount: totalAmount.toString(),
+        product_title: this.config.productTitle,
+        payment_type: this.paymentType,
       });
 
-      window.location.href = this.checkoutUrl + '?' + params.toString();
+      if (this.paymentType === 'subscription') {
+        params.set('billing_interval', this.config.billingInterval);
+      }
+
+      window.location.href = this.config.checkoutUrl + '?' + params.toString();
     }
 
     /**
@@ -156,10 +244,10 @@
      * @return {string} Formatted number string.
      */
     formatNumber(amount) {
-      var decimals = this.isZeroDecimal ? 0 : 2;
+      var decimals = this.config.isZeroDecimal ? 0 : 2;
       var parts = amount.toFixed(decimals).split('.');
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, this.thousandSep);
-      return parts.length > 1 ? parts[0] + this.decimalSep + parts[1] : parts[0];
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, this.config.thousandSep);
+      return parts.length > 1 ? parts[0] + this.config.decimalSep + parts[1] : parts[0];
     }
 
     /**
@@ -171,15 +259,15 @@
     formatAmount(amount) {
       var price = this.formatNumber(amount);
 
-      switch (this.currencyPos) {
-        case 'after':              return price + this.currencySymbol;
-        case 'iso_before':         return this.currencyCode + ' ' + price;
-        case 'iso_after':          return price + ' ' + this.currencyCode;
-        case 'symbool_before_iso': return this.currencySymbol + price + ' ' + this.currencyCode;
-        case 'symbool_after_iso':  return this.currencyCode + ' ' + price + this.currencySymbol;
-        case 'symbool_and_iso':    return this.currencyCode + ' ' + this.currencySymbol + price;
+      switch (this.config.currencyPos) {
+        case 'after':              return price + this.config.currencySymbol;
+        case 'iso_before':         return this.config.currencyCode + ' ' + price;
+        case 'iso_after':          return price + ' ' + this.config.currencyCode;
+        case 'symbool_before_iso': return this.config.currencySymbol + price + ' ' + this.config.currencyCode;
+        case 'symbool_after_iso':  return this.config.currencyCode + ' ' + price + this.config.currencySymbol;
+        case 'symbool_and_iso':    return this.config.currencyCode + ' ' + this.config.currencySymbol + price;
         case 'before':
-        default:                   return this.currencySymbol + price;
+        default:                   return this.config.currencySymbol + price;
       }
     }
 
@@ -187,37 +275,46 @@
      * Update the display-only amount element (when custom input is disabled).
      */
     updateAmountDisplay() {
-      if (!this.amountDisplay) {
+      if (!this.els.amountDisplay) {
         return;
       }
 
-      this.amountDisplay.textContent = this.selectedAmount > 0
+      this.els.amountDisplay.textContent = this.selectedAmount > 0
         ? this.formatNumber(this.selectedAmount)
         : '';
     }
 
     /**
-     * Update the submit button text, replacing {amount} with the formatted value.
+     * Update the submit button text, replacing {amount} and {frequency} placeholders.
      */
     updateButtonText() {
-      if (!this.button) {
+      if (!this.els.button) {
         return;
       }
 
-      var text = this.buttonTemplate;
+      var text = this.paymentType === 'subscription'
+        ? this.config.buttonTemplateSubscription
+        : this.config.buttonTemplateOnetime;
 
-      if (text.indexOf('{amount}') === -1) {
-        this.button.textContent = text;
-        return;
+      // Replace {frequency}
+      if (text.indexOf('{frequency}') !== -1) {
+        if (this.paymentType === 'subscription') {
+          text = text.replace('{frequency}', this.config.frequencyNoun);
+        } else {
+          text = text.replace('{frequency}', '');
+        }
       }
 
-      if (this.selectedAmount > 0) {
-        text = text.replace('{amount}', this.formatAmount(this.selectedAmount));
-      } else {
-        text = text.replace('{amount}', '').replace(/\s+/g, ' ').trim();
+      // Replace {amount}
+      if (text.indexOf('{amount}') !== -1) {
+        if (this.selectedAmount > 0) {
+          text = text.replace('{amount}', this.formatAmount(this.selectedAmount));
+        } else {
+          text = text.replace('{amount}', '');
+        }
       }
 
-      this.button.textContent = text;
+      this.els.button.textContent = text.replace(/\s+/g, ' ').trim();
     }
 
     /**
@@ -226,22 +323,22 @@
      * @param {string} msg - The error message to display.
      */
     showError(msg) {
-      if (!this.errorEl) {
+      if (!this.els.error) {
         return;
       }
 
-      this.errorEl.textContent = msg;
+      this.els.error.textContent = msg;
     }
 
     /**
      * Clear the validation error message.
      */
     clearError() {
-      if (!this.errorEl) {
+      if (!this.els.error) {
         return;
       }
 
-      this.errorEl.textContent = '';
+      this.els.error.textContent = '';
     }
   }
 

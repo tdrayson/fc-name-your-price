@@ -76,6 +76,23 @@ class FluentCartIntegration
             sanitize_text_field(wp_unslash($_GET['product_title'] ?? __('Donation', 'fc-name-your-price')))
         );
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $paymentType = isset($_GET['payment_type']) && $_GET['payment_type'] === 'subscription'
+            ? 'subscription'
+            : 'onetime';
+
+        $allowedIntervals = ['daily', 'weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly'];
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $billingInterval = isset($_GET['billing_interval']) && in_array($_GET['billing_interval'], $allowedIntervals, true)
+            ? $_GET['billing_interval']
+            : 'monthly';
+
+        $otherInfo = ['payment_type' => $paymentType];
+
+        if ($paymentType === 'subscription') {
+            $otherInfo['repeat_interval'] = $billingInterval;
+        }
+
         return (object) apply_filters('fcnyp_variation_data', [
             'item_id'           => $itemId,
             'object_id'         => $itemId,
@@ -87,12 +104,10 @@ class FluentCartIntegration
             'post_title'        => $productTitle,
             'title'             => $productTitle,
             'is_custom'         => true,
-            'payment_type'      => 'onetime',
+            'payment_type'      => $paymentType,
             'fulfillment_type'  => 'digital',
             'sold_individually' => 1,
-            'other_info'        => [
-                'payment_type' => 'onetime',
-            ],
+            'other_info'        => $otherInfo,
         ], $amount, $item);
     }
 
