@@ -103,9 +103,9 @@ class FluentCartIntegration
             );
         }
 
-        // The charged amount must not be less than what the visitor chose
-        // and must stay within a reasonable fee margin above the base.
-        if ($amount < $baseAmount) {
+        // The charged amount must be positive, not less than the visitor's
+        // choice, and within a reasonable fee margin above the base.
+        if ($amount <= 0 || $amount < $baseAmount) {
             return new \WP_Error(
                 'fcnyp_invalid_amount',
                 __('Invalid amount.', 'fc-name-your-price')
