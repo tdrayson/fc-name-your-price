@@ -195,6 +195,10 @@ fc-name-your-price/
 
 ## Changelog
 
+### 1.2.2 — 2026-03-08
+- Add nonce verification to checkout URLs to ensure requests originate from a rendered form
+- Redirect to home page on invalid or expired nonce
+
 ### 1.2.1 — 2026-03-08
 - Fix hardcoded English JS error messages — now translatable via `wp_localize_script`
 - Wrap form in `<form>` element for Enter key submit and screen reader accessibility

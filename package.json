@@ -1,6 +1,6 @@
 {
   "name": "fc-name-your-price",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A WordPress plugin that adds \"name your price\" and \"pay what you want\" forms powered by [FluentCart](https://fluent.cart).",
   "main": "index.js",
   "scripts": {
