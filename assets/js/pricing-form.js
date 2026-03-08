@@ -241,6 +241,10 @@
         _fcnyp_sig: this.config.signature,
       });
 
+      this.els.button.disabled = true;
+      this.els.button.classList.add('fcnyp-form__button--loading');
+      this.els.button.textContent = (window.fcnypI18n && window.fcnypI18n.processing) || 'Processing\u2026';
+
       window.location.href = this.config.checkoutUrl + '?' + params.toString();
     }
 
