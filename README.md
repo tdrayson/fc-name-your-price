@@ -197,7 +197,11 @@ fc-name-your-price/
 
 ### 1.2.2 — 2026-03-08
 - Add nonce verification to checkout URLs to ensure requests originate from a rendered form
-- Redirect to home page on invalid or expired nonce
+- Add HMAC signature to verify form config integrity — product title, subscription mode, billing interval, min/max are signed at render time and validated server-side
+- Server-side min/max validation now enforces shortcode attributes instead of hardcoded defaults
+- Subscription mode enforced server-side — forms configured as one-time only reject subscription attempts
+- Redirect to home page on invalid nonce or tampered signature
+- Rename `donation_amount` URL param to `amount`
 
 ### 1.2.1 — 2026-03-08
 - Fix hardcoded English JS error messages — now translatable via `wp_localize_script`
