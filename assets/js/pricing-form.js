@@ -36,6 +36,8 @@
         decimalSep:     el.dataset.decimalSeparator || '.',
         thousandSep:    el.dataset.thousandSeparator || ',',
         isZeroDecimal:  el.dataset.isZeroDecimal === 'true',
+        errorMin:           el.dataset.errorMin || 'Please enter an amount of at least {amount}',
+        errorMax:           el.dataset.errorMax || 'Maximum amount is {amount}',
         buttonTemplate:             el.dataset.buttonText || 'Pay',
         buttonTemplateOnetime:      el.dataset.buttonTextOnetime || el.dataset.buttonText || 'Pay',
         buttonTemplateSubscription: el.dataset.buttonTextSubscription || el.dataset.buttonText || 'Pay',
@@ -95,9 +97,7 @@
         this.els.input.addEventListener('input', this.onInputChange.bind(this));
       }
 
-      if (this.els.button) {
-        this.els.button.addEventListener('click', this.onSubmit.bind(this));
-      }
+      this.el.addEventListener('submit', this.onSubmit.bind(this));
 
       if (this.els.subscriptionCheckbox) {
         this.els.subscriptionCheckbox.addEventListener('change', this.onSubscriptionToggle.bind(this));
@@ -204,14 +204,16 @@
     /**
      * Handle the submit/checkout button click.
      */
-    onSubmit() {
+    onSubmit(e) {
+      e.preventDefault();
+
       if (!this.selectedAmount || this.selectedAmount < this.config.min) {
-        this.showError('Please enter an amount of at least ' + this.formatAmount(this.config.min));
+        this.showError(this.config.errorMin.replace('{amount}', this.formatAmount(this.config.min)));
         return;
       }
 
       if (this.selectedAmount > this.config.max) {
-        this.showError('Maximum amount is ' + this.formatAmount(this.config.max));
+        this.showError(this.config.errorMax.replace('{amount}', this.formatAmount(this.config.max)));
         return;
       }
 

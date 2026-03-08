@@ -85,6 +85,11 @@ class Shortcode
             $atts['default_amount'] = $presetAmounts[0];
         }
 
+        // If there's no way to select an amount, fall back to allowing custom input.
+        if (! $allowCustom && ! $showPresets && empty($atts['default_amount'])) {
+            $allowCustom = true;
+        }
+
         // For subscription modes, use the subscription button text
         if ($atts['subscription_mode'] === 'optional') {
             $atts['button_text_onetime']     = $atts['button_text'];
@@ -144,6 +149,8 @@ class Shortcode
             'decimal-separator'  => esc_attr($atts['decimal_separator']),
             'thousand-separator' => esc_attr($atts['thousand_separator']),
             'is-zero-decimal'    => $atts['is_zero_decimal'] ? 'true' : 'false',
+            'error-min'          => esc_attr__('Please enter an amount of at least {amount}', 'fc-name-your-price'),
+            'error-max'          => esc_attr__('Maximum amount is {amount}', 'fc-name-your-price'),
             'product-title'      => esc_attr($atts['product_title']),
             'checkout-url'       => esc_url(site_url('/')),
             'button-text'        => esc_attr($atts['button_text']),
@@ -192,23 +199,24 @@ class Shortcode
         $displayNumber = self::formatDisplayNumber($defaultAmount, $atts);
         $presets       = $showPresets ? self::preparePresets($presetAmounts, $allowCustom) : null;
         ?>
-        <div id="<?php echo esc_attr($uniqueId); ?>" class="fcnyp-form <?php echo esc_attr($layoutClass); ?>"<?php echo $dataString; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+        <form id="<?php echo esc_attr($uniqueId); ?>" class="fcnyp-form <?php echo esc_attr($layoutClass); ?>"<?php echo $dataString; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
             <?php
             $headerStyle = '';
-            if (! empty($atts['text_align'])) {
+            $allowedAligns = ['left', 'center', 'right'];
+            if (! empty($atts['text_align']) && in_array($atts['text_align'], $allowedAligns, true)) {
                 $headerStyle = sprintf(' style="text-align:%s"', esc_attr($atts['text_align']));
             }
             ?>
             <?php if (! empty($atts['form_title'])) : ?>
             <div class="fcnyp-form__header"<?php echo $headerStyle; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <h3 class="fcnyp-form__title"><?php echo wp_kses_post($atts['form_title']); ?></h3>
+                <h3 class="fcnyp-form__title"><?php echo wp_kses($atts['form_title'], ['strong' => [], 'em' => [], 'br' => []]); ?></h3>
                 <?php if (! empty($atts['form_description'])) : ?>
-                    <p class="fcnyp-form__description"><?php echo wp_kses_post($atts['form_description']); ?></p>
+                    <p class="fcnyp-form__description"><?php echo wp_kses($atts['form_description'], ['strong' => [], 'em' => [], 'br' => []]); ?></p>
                 <?php endif; ?>
             </div>
             <?php elseif (! empty($atts['form_description'])) : ?>
             <div class="fcnyp-form__header"<?php echo $headerStyle; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <p class="fcnyp-form__description"><?php echo wp_kses_post($atts['form_description']); ?></p>
+                <p class="fcnyp-form__description"><?php echo wp_kses($atts['form_description'], ['strong' => [], 'em' => [], 'br' => []]); ?></p>
             </div>
             <?php endif; ?>
             <div class="fcnyp-form__input-wrap">
@@ -276,9 +284,9 @@ class Shortcode
                 </span>
             </label>
             <?php endif; ?>
-            <button type="button" class="fcnyp-form__button"><?php echo esc_html($atts['rendered_button_text']); ?></button>
+            <button type="submit" class="fcnyp-form__button"><?php echo esc_html($atts['rendered_button_text']); ?></button>
             <div class="fcnyp-form__error" aria-live="polite"></div>
-        </div>
+        </form>
         <?php
     }
 
