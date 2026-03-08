@@ -74,7 +74,7 @@ class FluentCartIntegration
         }
 
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        $amount = isset($_GET['donation_amount']) ? floatval($_GET['donation_amount']) : 0;
+        $amount = isset($_GET['amount']) ? floatval($_GET['amount']) : 0;
         $min    = apply_filters('fcnyp_min_amount', $min);
         $max    = apply_filters('fcnyp_max_amount', $max);
 

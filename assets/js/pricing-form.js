@@ -229,7 +229,7 @@
         item_id: 'fcnyp_' + Date.now(),
         quantity: '1',
         is_custom: 'true',
-        donation_amount: totalAmount.toString(),
+        amount: totalAmount.toString(),
         product_title: this.config.productTitle,
         payment_type: this.paymentType,
         billing_interval: this.config.billingInterval,
