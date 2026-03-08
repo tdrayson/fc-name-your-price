@@ -156,6 +156,7 @@ class Shortcode
             'product-title'      => esc_attr($atts['product_title']),
             'checkout-url'       => esc_url(site_url('/')),
             'nonce'              => wp_create_nonce('fcnyp_checkout'),
+            'signature'          => self::generateSignature($atts),
             'button-text'        => esc_attr($atts['button_text']),
             'allow-custom'       => $atts['allow_custom'] === 'yes' ? 'true' : 'false',
             'default-amount'     => floatval($atts['default_amount']),
@@ -403,6 +404,30 @@ class Shortcode
         ];
 
         return $nouns[$interval] ?? $nouns['monthly'];
+    }
+
+    /**
+     * Generate an HMAC signature for the immutable form config.
+     *
+     * Signs the config values that should not be tampered with in the
+     * checkout URL (product title, subscription mode, billing interval,
+     * min, max). The amount is intentionally excluded since the user
+     * chooses it.
+     *
+     * @param array $atts Processed shortcode attributes.
+     * @return string HMAC-SHA256 hex signature.
+     */
+    public static function generateSignature($atts)
+    {
+        $payload = implode('|', [
+            $atts['product_title'],
+            $atts['subscription_mode'],
+            $atts['billing_interval'],
+            floatval($atts['min']),
+            floatval($atts['max']),
+        ]);
+
+        return hash_hmac('sha256', $payload, wp_salt('nonce'));
     }
 
     /**

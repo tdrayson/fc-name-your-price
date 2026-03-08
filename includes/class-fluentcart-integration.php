@@ -49,9 +49,34 @@ class FluentCartIntegration
         }
 
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $productTitle = sanitize_text_field(wp_unslash($_GET['product_title'] ?? __('Donation', 'fc-name-your-price')));
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $subscriptionMode = isset($_GET['fcnyp_subscription_mode']) ? sanitize_text_field($_GET['fcnyp_subscription_mode']) : 'off';
+        $allowedIntervals = ['daily', 'weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly'];
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $billingInterval = isset($_GET['billing_interval']) && in_array($_GET['billing_interval'], $allowedIntervals, true)
+            ? $_GET['billing_interval']
+            : 'monthly';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $min = isset($_GET['fcnyp_min']) ? floatval($_GET['fcnyp_min']) : 1;
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $max = isset($_GET['fcnyp_max']) ? floatval($_GET['fcnyp_max']) : 10000;
+
+        // Verify the signature matches the form config to prevent tampering.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $signature = isset($_GET['_fcnyp_sig']) ? sanitize_text_field($_GET['_fcnyp_sig']) : '';
+        $expectedPayload = implode('|', [$productTitle, $subscriptionMode, $billingInterval, $min, $max]);
+        $expectedSignature = hash_hmac('sha256', $expectedPayload, wp_salt('nonce'));
+
+        if (! hash_equals($expectedSignature, $signature)) {
+            wp_safe_redirect(home_url('/'));
+            exit;
+        }
+
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $amount = isset($_GET['donation_amount']) ? floatval($_GET['donation_amount']) : 0;
-        $min    = apply_filters('fcnyp_min_amount', 1);
-        $max    = apply_filters('fcnyp_max_amount', 10000);
+        $min    = apply_filters('fcnyp_min_amount', $min);
+        $max    = apply_filters('fcnyp_max_amount', $max);
 
         if ($amount <= 0) {
             return new \WP_Error(
@@ -78,22 +103,17 @@ class FluentCartIntegration
 
         $priceInCents = round($amount * 100);
 
-        $productTitle = apply_filters(
-            'fcnyp_product_title',
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            sanitize_text_field(wp_unslash($_GET['product_title'] ?? __('Donation', 'fc-name-your-price')))
-        );
+        $productTitle = apply_filters('fcnyp_product_title', $productTitle);
 
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $paymentType = isset($_GET['payment_type']) && $_GET['payment_type'] === 'subscription'
             ? 'subscription'
             : 'onetime';
 
-        $allowedIntervals = ['daily', 'weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly'];
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        $billingInterval = isset($_GET['billing_interval']) && in_array($_GET['billing_interval'], $allowedIntervals, true)
-            ? $_GET['billing_interval']
-            : 'monthly';
+        // Enforce subscription mode from the signed config.
+        if ($paymentType === 'subscription' && $subscriptionMode === 'off') {
+            $paymentType = 'onetime';
+        }
 
         $otherInfo = ['payment_type' => $paymentType];
 

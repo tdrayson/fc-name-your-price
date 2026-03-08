@@ -30,6 +30,7 @@
         max:            parseFloat(el.dataset.max) || 10000,
         checkoutUrl:    el.dataset.checkoutUrl || '/',
         nonce:          el.dataset.nonce || '',
+        signature:      el.dataset.signature || '',
         productTitle:   el.dataset.productTitle || 'Donation',
         currencyPos:    el.dataset.currencyPosition || 'before',
         currencySymbol: el.dataset.currencySymbol || '$',
@@ -231,12 +232,13 @@
         donation_amount: totalAmount.toString(),
         product_title: this.config.productTitle,
         payment_type: this.paymentType,
+        billing_interval: this.config.billingInterval,
+        fcnyp_min: this.config.min.toString(),
+        fcnyp_max: this.config.max.toString(),
+        fcnyp_subscription_mode: this.config.subscriptionMode,
         _fcnyp_nonce: this.config.nonce,
+        _fcnyp_sig: this.config.signature,
       });
-
-      if (this.paymentType === 'subscription') {
-        params.set('billing_interval', this.config.billingInterval);
-      }
 
       window.location.href = this.config.checkoutUrl + '?' + params.toString();
     }
