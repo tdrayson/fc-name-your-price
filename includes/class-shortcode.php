@@ -130,6 +130,10 @@ class Shortcode
     {
         wp_enqueue_style('fcnyp-form', FCNYP_PLUGIN_URL . 'assets/css/pricing-form.css', [], FCNYP_VERSION);
         wp_enqueue_script('fcnyp-form', FCNYP_PLUGIN_URL . 'assets/js/pricing-form.js', [], FCNYP_VERSION, true);
+        wp_localize_script('fcnyp-form', 'fcnypI18n', [
+            'errorMin' => __('Please enter an amount of at least {amount}', 'fc-name-your-price'),
+            'errorMax' => __('Maximum amount is {amount}', 'fc-name-your-price'),
+        ]);
     }
 
     /**
@@ -149,8 +153,6 @@ class Shortcode
             'decimal-separator'  => esc_attr($atts['decimal_separator']),
             'thousand-separator' => esc_attr($atts['thousand_separator']),
             'is-zero-decimal'    => $atts['is_zero_decimal'] ? 'true' : 'false',
-            'error-min'          => esc_attr__('Please enter an amount of at least {amount}', 'fc-name-your-price'),
-            'error-max'          => esc_attr__('Maximum amount is {amount}', 'fc-name-your-price'),
             'product-title'      => esc_attr($atts['product_title']),
             'checkout-url'       => esc_url(site_url('/')),
             'button-text'        => esc_attr($atts['button_text']),
