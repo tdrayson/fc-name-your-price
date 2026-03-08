@@ -209,14 +209,14 @@ class Shortcode
             ?>
             <?php if (! empty($atts['form_title'])) : ?>
             <div class="fcnyp-form__header"<?php echo $headerStyle; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <h3 class="fcnyp-form__title"><?php echo wp_kses($atts['form_title'], ['strong' => [], 'em' => [], 'br' => []]); ?></h3>
+                <h3 class="fcnyp-form__title"><?php echo wp_kses($atts['form_title'], self::getAllowedFormattingTags()); ?></h3>
                 <?php if (! empty($atts['form_description'])) : ?>
-                    <p class="fcnyp-form__description"><?php echo wp_kses($atts['form_description'], ['strong' => [], 'em' => [], 'br' => []]); ?></p>
+                    <p class="fcnyp-form__description"><?php echo wp_kses($atts['form_description'], self::getAllowedFormattingTags()); ?></p>
                 <?php endif; ?>
             </div>
             <?php elseif (! empty($atts['form_description'])) : ?>
             <div class="fcnyp-form__header"<?php echo $headerStyle; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <p class="fcnyp-form__description"><?php echo wp_kses($atts['form_description'], ['strong' => [], 'em' => [], 'br' => []]); ?></p>
+                <p class="fcnyp-form__description"><?php echo wp_kses($atts['form_description'], self::getAllowedFormattingTags()); ?></p>
             </div>
             <?php endif; ?>
             <div class="fcnyp-form__input-wrap">
@@ -400,6 +400,52 @@ class Shortcode
         ];
 
         return $nouns[$interval] ?? $nouns['monthly'];
+    }
+
+    /**
+     * Get the allowed HTML tags for form title and description fields.
+     *
+     * Matches the formatting options available in the RichText block editor component.
+     *
+     * @return array<string, array<string, bool>>
+     */
+    private static function getAllowedFormattingTags()
+    {
+        return [
+            'strong' => [],
+            'em'     => [],
+            'br'     => [],
+            's'      => [],
+            'del'    => [],
+            'sub'    => [],
+            'sup'    => [],
+            'a'      => [
+                'href'   => true,
+                'target' => true,
+                'rel'    => true,
+            ],
+            'code'   => [],
+            'mark'   => [
+                'style' => true,
+                'class' => true,
+            ],
+            'kbd'    => [],
+            'bdo'    => [
+                'dir' => true,
+            ],
+            'img'    => [
+                'src'    => true,
+                'alt'    => true,
+                'class'  => true,
+                'width'  => true,
+                'height' => true,
+            ],
+            'span'   => [
+                'style' => true,
+                'class' => true,
+                'lang'  => true,
+            ],
+        ];
     }
 
     /**
