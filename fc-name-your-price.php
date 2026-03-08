@@ -30,6 +30,10 @@ add_action('init', 'fcnyp_register_editor_assets', 20);
  */
 function fcnyp_init()
 {
+    if (! class_exists('\\FluentCart\\Api\\CurrencySettings')) {
+        return;
+    }
+
     require_once FCNYP_PLUGIN_DIR . 'includes/class-shortcode.php';
     require_once FCNYP_PLUGIN_DIR . 'includes/class-fluentcart-integration.php';
 
