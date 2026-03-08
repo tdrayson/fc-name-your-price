@@ -160,6 +160,16 @@ class FluentCartIntegration
             return $items;
         }
 
+        $price = $variation->price ?? 0;
+        if ($price <= 0) {
+            return [null, null];
+        }
+
+        $title = $variation->post_title ?? ($variation->title ?? '');
+        if (empty($title)) {
+            return [null, null];
+        }
+
         return [$product, $variation];
     }
 
