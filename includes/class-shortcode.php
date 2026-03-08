@@ -433,14 +433,7 @@ class Shortcode
             'bdo'    => [
                 'dir' => true,
             ],
-            'img'    => [
-                'src'    => true,
-                'alt'    => true,
-                'class'  => true,
-                'width'  => true,
-                'height' => true,
-            ],
-            'span'   => [
+'span'   => [
                 'style' => true,
                 'class' => true,
                 'lang'  => true,
