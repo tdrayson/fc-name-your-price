@@ -103,7 +103,9 @@ class FluentCartIntegration
             );
         }
 
-        $priceInCents = round($amount * 100);
+        $currencySettings = \FluentCart\Api\CurrencySettings::get();
+        $isZeroDecimal = ! empty($currencySettings['is_zero_decimal']);
+        $priceInCents = $isZeroDecimal ? round($amount) : round($amount * 100);
 
         $productTitle = apply_filters('fcnyp_product_title', $productTitle);
 
@@ -171,6 +173,10 @@ class FluentCartIntegration
      */
     private static function formatPrice($amount)
     {
-        return \FluentCart\Api\CurrencySettings::getFormattedPrice(round($amount * 100));
+        $settings = \FluentCart\Api\CurrencySettings::get();
+        $isZeroDecimal = ! empty($settings['is_zero_decimal']);
+        $cents = $isZeroDecimal ? round($amount) : round($amount * 100);
+
+        return \FluentCart\Api\CurrencySettings::getFormattedPrice($cents);
     }
 }
