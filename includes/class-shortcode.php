@@ -85,6 +85,11 @@ class Shortcode
             $atts['default_amount'] = $presetAmounts[0];
         }
 
+        // If there's no way to select an amount, fall back to allowing custom input.
+        if (! $allowCustom && ! $showPresets && empty($atts['default_amount'])) {
+            $allowCustom = true;
+        }
+
         // For subscription modes, use the subscription button text
         if ($atts['subscription_mode'] === 'optional') {
             $atts['button_text_onetime']     = $atts['button_text'];
@@ -125,6 +130,10 @@ class Shortcode
     {
         wp_enqueue_style('fcnyp-form', FCNYP_PLUGIN_URL . 'assets/css/pricing-form.css', [], FCNYP_VERSION);
         wp_enqueue_script('fcnyp-form', FCNYP_PLUGIN_URL . 'assets/js/pricing-form.js', [], FCNYP_VERSION, true);
+        wp_localize_script('fcnyp-form', 'fcnypI18n', [
+            'errorMin' => __('Please enter an amount of at least {amount}', 'fc-name-your-price'),
+            'errorMax' => __('Maximum amount is {amount}', 'fc-name-your-price'),
+        ]);
     }
 
     /**
@@ -192,23 +201,24 @@ class Shortcode
         $displayNumber = self::formatDisplayNumber($defaultAmount, $atts);
         $presets       = $showPresets ? self::preparePresets($presetAmounts, $allowCustom) : null;
         ?>
-        <div id="<?php echo esc_attr($uniqueId); ?>" class="fcnyp-form <?php echo esc_attr($layoutClass); ?>"<?php echo $dataString; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+        <form id="<?php echo esc_attr($uniqueId); ?>" class="fcnyp-form <?php echo esc_attr($layoutClass); ?>"<?php echo $dataString; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
             <?php
             $headerStyle = '';
-            if (! empty($atts['text_align'])) {
+            $allowedAligns = ['left', 'center', 'right'];
+            if (! empty($atts['text_align']) && in_array($atts['text_align'], $allowedAligns, true)) {
                 $headerStyle = sprintf(' style="text-align:%s"', esc_attr($atts['text_align']));
             }
             ?>
             <?php if (! empty($atts['form_title'])) : ?>
             <div class="fcnyp-form__header"<?php echo $headerStyle; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <h3 class="fcnyp-form__title"><?php echo wp_kses_post($atts['form_title']); ?></h3>
+                <h3 class="fcnyp-form__title"><?php echo wp_kses($atts['form_title'], self::getAllowedFormattingTags()); ?></h3>
                 <?php if (! empty($atts['form_description'])) : ?>
-                    <p class="fcnyp-form__description"><?php echo wp_kses_post($atts['form_description']); ?></p>
+                    <p class="fcnyp-form__description"><?php echo wp_kses($atts['form_description'], self::getAllowedFormattingTags()); ?></p>
                 <?php endif; ?>
             </div>
             <?php elseif (! empty($atts['form_description'])) : ?>
             <div class="fcnyp-form__header"<?php echo $headerStyle; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-                <p class="fcnyp-form__description"><?php echo wp_kses_post($atts['form_description']); ?></p>
+                <p class="fcnyp-form__description"><?php echo wp_kses($atts['form_description'], self::getAllowedFormattingTags()); ?></p>
             </div>
             <?php endif; ?>
             <div class="fcnyp-form__input-wrap">
@@ -276,9 +286,9 @@ class Shortcode
                 </span>
             </label>
             <?php endif; ?>
-            <button type="button" class="fcnyp-form__button"><?php echo esc_html($atts['rendered_button_text']); ?></button>
+            <button type="submit" class="fcnyp-form__button"><?php echo esc_html($atts['rendered_button_text']); ?></button>
             <div class="fcnyp-form__error" aria-live="polite"></div>
-        </div>
+        </form>
         <?php
     }
 
@@ -392,6 +402,45 @@ class Shortcode
         ];
 
         return $nouns[$interval] ?? $nouns['monthly'];
+    }
+
+    /**
+     * Get the allowed HTML tags for form title and description fields.
+     *
+     * Matches the formatting options available in the RichText block editor component.
+     *
+     * @return array<string, array<string, bool>>
+     */
+    private static function getAllowedFormattingTags()
+    {
+        return [
+            'strong' => [],
+            'em'     => [],
+            'br'     => [],
+            's'      => [],
+            'del'    => [],
+            'sub'    => [],
+            'sup'    => [],
+            'a'      => [
+                'href'   => true,
+                'target' => true,
+                'rel'    => true,
+            ],
+            'code'   => [],
+            'mark'   => [
+                'style' => true,
+                'class' => true,
+            ],
+            'kbd'    => [],
+            'bdo'    => [
+                'dir' => true,
+            ],
+'span'   => [
+                'style' => true,
+                'class' => true,
+                'lang'  => true,
+            ],
+        ];
     }
 
     /**
