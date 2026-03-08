@@ -319,6 +319,18 @@ export default function Edit({ attributes, setAttributes }) {
             value={formTitle}
             onChange={(value) => setAttributes({ formTitle: value })}
             placeholder={__('Add a title...', 'fc-name-your-price')}
+            allowedFormats={[
+              'core/bold',
+              'core/italic',
+              'core/link',
+              'core/strikethrough',
+              'core/subscript',
+              'core/superscript',
+              'core/code',
+              'core/keyboard',
+              'core/text-color',
+              'core/language',
+            ]}
           />
           <RichText
             tagName="p"
@@ -326,6 +338,18 @@ export default function Edit({ attributes, setAttributes }) {
             value={formDescription}
             onChange={(value) => setAttributes({ formDescription: value })}
             placeholder={__('Add a description...', 'fc-name-your-price')}
+            allowedFormats={[
+              'core/bold',
+              'core/italic',
+              'core/link',
+              'core/strikethrough',
+              'core/subscript',
+              'core/superscript',
+              'core/code',
+              'core/keyboard',
+              'core/text-color',
+              'core/language',
+            ]}
           />
         </div>
 
