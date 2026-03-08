@@ -226,7 +226,7 @@
 
       var params = new URLSearchParams({
         'fluent-cart': 'instant_checkout',
-        item_id: 'fcnyp_' + Date.now(),
+        item_id: 'fcnyp_' + crypto.randomUUID(),
         quantity: '1',
         is_custom: 'true',
         amount: totalAmount.toString(),
