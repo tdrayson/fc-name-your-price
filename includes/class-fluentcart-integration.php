@@ -103,6 +103,24 @@ class FluentCartIntegration
             );
         }
 
+        // The charged amount must be positive, not less than the visitor's
+        // choice, and within a reasonable fee margin above the base.
+        if ($amount <= 0 || $amount < $baseAmount) {
+            return new \WP_Error(
+                'fcnyp_invalid_amount',
+                __('Invalid amount.', 'fc-name-your-price')
+            );
+        }
+
+        $maxWithFees = $max * 1.15;
+        if ($amount > $maxWithFees) {
+            return new \WP_Error(
+                'fcnyp_amount_too_high',
+                /* translators: %s: formatted maximum amount */
+                sprintf(__('Maximum amount is %s.', 'fc-name-your-price'), self::formatPrice($max))
+            );
+        }
+
         $priceInCents = round($amount * 100);
 
         $productTitle = apply_filters('fcnyp_product_title', $productTitle);
