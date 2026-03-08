@@ -155,6 +155,7 @@ class Shortcode
             'is-zero-decimal'    => $atts['is_zero_decimal'] ? 'true' : 'false',
             'product-title'      => esc_attr($atts['product_title']),
             'checkout-url'       => esc_url(site_url('/')),
+            'nonce'              => wp_create_nonce('fcnyp_checkout'),
             'button-text'        => esc_attr($atts['button_text']),
             'allow-custom'       => $atts['allow_custom'] === 'yes' ? 'true' : 'false',
             'default-amount'     => floatval($atts['default_amount']),

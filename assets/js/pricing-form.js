@@ -29,6 +29,7 @@
         min:            parseFloat(el.dataset.min) || 1,
         max:            parseFloat(el.dataset.max) || 10000,
         checkoutUrl:    el.dataset.checkoutUrl || '/',
+        nonce:          el.dataset.nonce || '',
         productTitle:   el.dataset.productTitle || 'Donation',
         currencyPos:    el.dataset.currencyPosition || 'before',
         currencySymbol: el.dataset.currencySymbol || '$',
@@ -230,6 +231,7 @@
         donation_amount: totalAmount.toString(),
         product_title: this.config.productTitle,
         payment_type: this.paymentType,
+        _fcnyp_nonce: this.config.nonce,
       });
 
       if (this.paymentType === 'subscription') {
